@@ -136,4 +136,4 @@ RecyclerView的工具类，更快的实现分页加载，更方便的实现Adapt
     See the License for the specific language governing permissions and
     limitations under the License.
 
-  [1]: https://github.com/freekite/Android-RecyclerViewHelper/blob/master/resource/ScreenShot.jpg
+  [1]: https://github.com/freekite/Android-RecyclerViewHelper/blob/master/resource/ScreenShot1.jpg
