@@ -4,7 +4,7 @@
 
 ##介绍
 
-RecyclerView的工具类，更快的实现分页加载，刚方便的实现Adapter。
+RecyclerView的工具类，更快的实现分页加载，更方便的实现Adapter。
 
 ##使用
 
@@ -100,8 +100,8 @@ RecyclerView的工具类，更快的实现分页加载，刚方便的实现Adapt
             dataList.add(String.valueOf(i));
         }
         listAdapter.notifyDataSetChanged();
-    }
-}
+	    }
+	}
 ```
 
 
