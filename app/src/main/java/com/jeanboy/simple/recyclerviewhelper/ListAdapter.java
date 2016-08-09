@@ -18,6 +18,10 @@ public class ListAdapter extends CommonAdapter<String> {
 
     @Override
     public void convert(ViewHolder holder, String s, int position) {
+        //
 
+        holder.setText(R.id.tv_title,"设置标题");
+        holder.setImageResource(R.id.iv_thumb,R.drawable.bg);
+        //...
     }
 }
