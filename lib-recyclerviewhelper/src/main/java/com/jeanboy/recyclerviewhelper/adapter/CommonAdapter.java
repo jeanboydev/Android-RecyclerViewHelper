@@ -1,39 +1,36 @@
 package com.jeanboy.recyclerviewhelper.adapter;
 
-import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import java.util.List;
 
 /**
- * Created by Next on 2016/8/5.
+ * Created by Next on 2016/8/10.
  */
-public abstract class CommonAdapter<T> extends RecyclerView.Adapter<ViewHolder> {
+public abstract class CommonAdapter<T> extends RecyclerView.Adapter<BaseViewHolder> {
 
-    private Context context;
+
     private List<T> dataList;
-    private int layoutId;
+    private int itemLayoutId = 0;
 
-    private OnItemClickListener onItemClickListener;
-
-    public CommonAdapter(Context context, List<T> dataList, int layoutId) {
-        this.context = context;
+    public CommonAdapter(@NonNull List<T> dataList, int itemLayoutId) {
         this.dataList = dataList;
-        this.layoutId = layoutId;
+        this.itemLayoutId = itemLayoutId;
     }
 
     @Override
-    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ViewHolder holder = ViewHolder.get(context, parent, layoutId);
+    public BaseViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        BaseViewHolder holder = new BaseViewHolder(getLayoutView(parent, itemLayoutId));
         setListener(holder);
         return holder;
     }
 
-
     @Override
-    public void onBindViewHolder(ViewHolder holder, int position) {
+    public void onBindViewHolder(BaseViewHolder holder, int position) {
         convert(holder, dataList.get(position), holder.getAdapterPosition());
     }
 
@@ -42,7 +39,16 @@ public abstract class CommonAdapter<T> extends RecyclerView.Adapter<ViewHolder> 
         return dataList.size();
     }
 
-    public void setListener(final ViewHolder viewHolder) {
+    public View getLayoutView(ViewGroup parent, int layoutId) {
+        return LayoutInflater.from(parent.getContext()).inflate(layoutId, parent, false);
+    }
+
+    /**
+     * 设置
+     *
+     * @param viewHolder
+     */
+    private void setListener(final BaseViewHolder viewHolder) {
         viewHolder.getConvertView().setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -52,13 +58,16 @@ public abstract class CommonAdapter<T> extends RecyclerView.Adapter<ViewHolder> 
                 }
             }
         });
-
     }
 
-    public abstract void convert(ViewHolder holder, T t, int position);
+
+    public abstract void convert(BaseViewHolder holder, T t, int position);
+
+
+    private OnItemClickListener onItemClickListener;
 
     public interface OnItemClickListener {
-        void onItemClick(View view, ViewHolder holder, int position);
+        void onItemClick(View view, BaseViewHolder holder, int position);
     }
 
     public void setOnItemClickListener(OnItemClickListener onItemClickListener) {

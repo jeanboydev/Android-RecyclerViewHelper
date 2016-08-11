@@ -1,9 +1,10 @@
 package com.jeanboy.simple.recyclerviewhelper;
 
-import android.content.Context;
 
+import android.support.annotation.NonNull;
+
+import com.jeanboy.recyclerviewhelper.adapter.BaseViewHolder;
 import com.jeanboy.recyclerviewhelper.adapter.CommonAdapter;
-import com.jeanboy.recyclerviewhelper.adapter.ViewHolder;
 
 import java.util.List;
 
@@ -12,16 +13,13 @@ import java.util.List;
  */
 public class ListAdapter extends CommonAdapter<String> {
 
-    public ListAdapter(Context context, List<String> dataList, int layoutId) {
-        super(context, dataList, layoutId);
+
+    public ListAdapter(@NonNull List<String> dataList) {
+        super(dataList, R.layout.item_list);
     }
 
     @Override
-    public void convert(ViewHolder holder, String s, int position) {
-        //
+    public void convert(BaseViewHolder holder, String s, int position) {
 
-        holder.setText(R.id.tv_title,"设置标题");
-        holder.setImageResource(R.id.iv_thumb,R.drawable.bg);
-        //...
     }
 }

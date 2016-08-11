@@ -1,44 +1,46 @@
 package com.jeanboy.recyclerviewhelper;
 
-import android.app.Activity;
 import android.support.annotation.NonNull;
-import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.view.View;
 
-import com.jeanboy.recyclerviewhelper.headerandfooter.HeaderAndFooterRecyclerViewAdapter;
-
+import com.jeanboy.recyclerviewhelper.adapter.HelperAdapter;
+import com.jeanboy.recyclerviewhelper.footer.LoadMoreView;
+import com.jeanboy.recyclerviewhelper.listener.LoadMoreListener;
+import com.jeanboy.recyclerviewhelper.listener.RecyclerViewScrollListener;
+import com.jeanboy.recyclerviewhelper.listener.TipsListener;
+import com.jeanboy.recyclerviewhelper.utils.LoadMoreUtil;
 
 /**
- * Created by Next on 2016/8/5.
+ * Created by Next on 2016/8/10.
  */
 public class RecyclerViewHelper {
 
-    private Activity activity;
+
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private RecyclerView.Adapter adapter;
-    private HeaderAndFooterRecyclerViewAdapter recyclerViewAdapter;
 
+    private HelperAdapter helperAdapter;
     private LoadMoreListener loadMoreListener;
 
-    public static RecyclerViewHelper build(Activity activity, RecyclerView recyclerView, RecyclerView.Adapter adapter) {
-        return new RecyclerViewHelper(activity, recyclerView, null, adapter);
+    private boolean hasMore = true;
+    private boolean isLoading = false;
+
+
+    public RecyclerViewHelper(RecyclerView recyclerView, RecyclerView.Adapter adapter) {
+        this(recyclerView, null, adapter);
     }
 
-    public static RecyclerViewHelper build(Activity activity, RecyclerView recyclerView,
-                                           RecyclerView.LayoutManager layoutManager, RecyclerView.Adapter adapter) {
-        return new RecyclerViewHelper(activity, recyclerView, layoutManager, adapter);
-    }
-
-    private RecyclerViewHelper(@NonNull Activity activity, @NonNull RecyclerView recyclerView,
-                               RecyclerView.LayoutManager layoutManager, @NonNull RecyclerView.Adapter adapter) {
-        this.activity = activity;
+    public RecyclerViewHelper(@NonNull RecyclerView recyclerView, RecyclerView.LayoutManager layoutManager,
+                              @NonNull RecyclerView.Adapter adapter) {
         this.recyclerView = recyclerView;
+        this.layoutManager = layoutManager;
         this.adapter = adapter;
 
         if (layoutManager == null) {//不传layoutManager默认为LinearLayoutManager
-            this.layoutManager = new LinearLayoutManager(activity);
+            this.layoutManager = new LinearLayoutManager(recyclerView.getContext());
         } else {
             this.layoutManager = layoutManager;
         }
@@ -48,72 +50,108 @@ public class RecyclerViewHelper {
 
     private void setup() {
         recyclerView.setLayoutManager(layoutManager);
-        recyclerView.setHasFixedSize(true);
-        recyclerViewAdapter = new HeaderAndFooterRecyclerViewAdapter(adapter);
-        recyclerView.setAdapter(recyclerViewAdapter);
-        recyclerView.setItemAnimator(new DefaultItemAnimator());
-    }
+        recyclerView.setHasFixedSize(true);//设置item固定宽高可提高性能
+        helperAdapter = new HelperAdapter(adapter);
+        recyclerView.setAdapter(helperAdapter);
 
-
-    /**
-     * 刷新数据
-     */
-    public void notifyDataSetChanged() {
-        if (recyclerViewAdapter != null) {
-            recyclerViewAdapter.notifyDataSetChanged();
-        }
-    }
-
-    /**
-     * 需要加载更多数据
-     *
-     * @param loadMoreCallback
-     */
-    public void addLoadMoreListener(final LoadMoreCallback loadMoreCallback) {
-        loadMoreListener = new LoadMoreListener(activity, recyclerView) {
+        recyclerView.addOnScrollListener(new RecyclerViewScrollListener() {
             @Override
-            public void loadMore() {
-                if (loadMoreCallback != null) {
-                    loadMoreCallback.loadMore();
+            public void loadMore(RecyclerView recyclerView) {
+
+                if (isLoading || adapter.getItemCount() == 0)
+                    return;
+
+                if (hasMore) {//设置footer为加载中...
+                    if (loadMoreListener != null) {
+                        LoadMoreUtil.updateState(recyclerView, LoadMoreView.State.LOADING, null);
+                        isLoading = true;
+                        loadMoreListener.loadMore();
+                    }
+                } else {//设置footer为加载完成
+                    LoadMoreUtil.updateState(recyclerView, LoadMoreView.State.NO_MORE, null);
                 }
             }
-        };
-        recyclerView.addOnScrollListener(loadMoreListener);
+        });
     }
 
-    /**
-     * 加载完成
-     */
-    public void loadComplete() {
-        if (loadMoreListener != null) {
-            loadMoreListener.loadComplete();
+
+    public RecyclerViewHelper setTipsEmptyView(int layoutId) {
+        if (helperAdapter != null) {
+            helperAdapter.setTipsEmptyView(layoutId);
+        }
+        return this;
+    }
+
+    public RecyclerViewHelper setTipsLoadingView(int layoutId) {
+        if (helperAdapter != null) {
+            helperAdapter.setTipsLoadingView(layoutId);
+        }
+        return this;
+    }
+
+    public RecyclerViewHelper setTipsErrorView(int layoutId) {
+        if (helperAdapter != null) {
+            helperAdapter.setTipsErrorView(layoutId);
+        }
+        return this;
+    }
+
+    public RecyclerViewHelper setHeaderView(int layoutId) {
+        if (helperAdapter != null) {
+            helperAdapter.setHeaderView(layoutId);
+        }
+        return this;
+    }
+
+
+    public void loadTipsComplete() {
+        if (helperAdapter != null) {
+            helperAdapter.loadTipsComplete();
         }
     }
 
     /**
-     * 设置是否还有下一页
-     *
-     * @param hasNext
+     * 加载失败
      */
-    public void hasNext(boolean hasNext) {
-        if (loadMoreListener != null) {
-            loadMoreListener.hasNext(hasNext);
+    public void loadTipsError() {
+        if (helperAdapter != null) {
+            helperAdapter.loadTipsError();
         }
     }
 
-    /**
-     * 设置每一页显示的条数
-     *
-     * @param pageSize
-     */
-    public void setPageSize(int pageSize) {
-        if (loadMoreListener != null) {
-            loadMoreListener.setPageSize(pageSize);
+
+    public void loadMoreFinish(boolean hasMore) {
+        this.hasMore = hasMore;
+        this.isLoading = false;
+        if (!hasMore) {
+            LoadMoreUtil.updateState(recyclerView, LoadMoreView.State.NO_MORE, null);
+        }
+        if (helperAdapter != null) {
+            helperAdapter.notifyDataSetChanged();
         }
     }
 
-    public interface LoadMoreCallback {
-        void loadMore();
+    public void loadMoreError() {//设置footer为加载失败
+        this.hasMore = true;
+        this.isLoading = false;
+        LoadMoreUtil.updateState(recyclerView, LoadMoreView.State.ERROR, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                LoadMoreUtil.updateState(recyclerView, LoadMoreView.State.LOADING, null);
+                if (loadMoreListener != null) {
+                    loadMoreListener.loadMore();
+                }
+            }
+        });
     }
 
+    public void setLoadMoreListener(LoadMoreListener loadMoreListener) {
+        this.loadMoreListener = loadMoreListener;
+    }
+
+    public void setTipsListener(TipsListener tipsListener) {
+        if (helperAdapter != null) {
+            helperAdapter.setTipsListener(tipsListener);
+        }
+    }
 }

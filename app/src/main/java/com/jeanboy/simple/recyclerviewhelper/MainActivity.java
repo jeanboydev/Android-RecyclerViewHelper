@@ -5,6 +5,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 
 import com.jeanboy.recyclerviewhelper.RecyclerViewHelper;
+import com.jeanboy.recyclerviewhelper.listener.LoadMoreListener;
+import com.jeanboy.recyclerviewhelper.listener.TipsListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,7 +21,9 @@ public class MainActivity extends AppCompatActivity {
     private ListAdapter listAdapter;
 
 
-    private RecyclerViewHelper loadMoreHelper;
+    private RecyclerViewHelper recyclerViewHelper;
+
+    private int loadCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,23 +33,41 @@ public class MainActivity extends AppCompatActivity {
 
         list_container = (RecyclerView) findViewById(R.id.list_container);
         dataList = new ArrayList<>();
-        listAdapter = new ListAdapter(this, dataList, R.layout.item_list);
 
-        //设置RecyclerView的layoutManager
-//        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-//        loadMoreHelper = RecyclerViewHelper.build(this, list_container, layoutManager, listAdapter);
+        listAdapter = new ListAdapter(dataList);
 
-        //不传layoutManager默认为LinearLayoutManager
-        loadMoreHelper = RecyclerViewHelper.build(this, list_container, listAdapter);
+        //使用helper实现分页加载和加载的Tips
+        recyclerViewHelper = new RecyclerViewHelper(list_container, listAdapter);
 
-        loadMoreHelper.addLoadMoreListener(new RecyclerViewHelper.LoadMoreCallback() {
+        //设置没有数据的Tips
+        recyclerViewHelper.setTipsEmptyView(R.layout.view_data_empty);
+        //设置加载中的Tips
+        recyclerViewHelper.setTipsLoadingView(R.layout.view_data_loading);
+        //设置加载失败的Tips
+        recyclerViewHelper.setTipsErrorView(R.layout.view_data_error);
+
+        //加载失败，没有数据时Tips的接口
+        recyclerViewHelper.setTipsListener(new TipsListener() {
+            @Override
+            public void retry() {
+                initData();
+            }
+        });
+
+        //设置header
+//        recyclerViewHelper.setHeaderView(R.layout.view_header);
+
+        //加载更多的接口
+        recyclerViewHelper.setLoadMoreListener(new LoadMoreListener() {
             @Override
             public void loadMore() {
                 loadNext();
             }
         });
 
+
         initData();
+
     }
 
     private void loadNext() {
@@ -53,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(1500);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -61,12 +83,21 @@ public class MainActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        for (int i = 0; i < 10; i++) {
-                            dataList.add(String.valueOf(i));
+                        if (loadCount % 2 != 0) {
+                            //分页数据加载失败
+                            recyclerViewHelper.loadMoreError();
+                        } else if (loadCount < 10) {
+                            for (int i = 0; i < 10; i++) {
+                                dataList.add(String.valueOf(i));
+                            }
+                            //分页数据加载成功，还有下一页
+                            recyclerViewHelper.loadMoreFinish(true);
+                        } else {
+                            //分页数据加载成功，没有更多。即全部加载完成
+                            recyclerViewHelper.loadMoreFinish(false);
                         }
-                        loadMoreHelper.loadComplete();//通知helper加载完成
-                        loadMoreHelper.notifyDataSetChanged();//刷新数据
-                        loadMoreHelper.hasNext(true);//是否还有下一页
+
+                        loadCount++;
                     }
                 });
             }
@@ -75,9 +106,35 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        for (int i = 0; i < 20; i++) {
-            dataList.add(String.valueOf(i));
-        }
-        listAdapter.notifyDataSetChanged();
+        dataList.clear();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (loadCount == 0) {
+                            //首次加载数据成功
+                            recyclerViewHelper.loadTipsComplete();
+                        } else if (loadCount == 1) {
+                            //首次数据记载失败
+                            recyclerViewHelper.loadTipsError();
+                        } else {
+                            for (int i = 0; i < 10; i++) {
+                                dataList.add(String.valueOf(i));
+                            }
+                            recyclerViewHelper.loadTipsComplete();
+                        }
+                        loadCount++;
+                    }
+                });
+            }
+        }).start();
     }
 }

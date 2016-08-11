@@ -3,14 +3,20 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center"
-    android:orientation="horizontal">
+    android:orientation="vertical">
+
+
+    <ImageView
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/bg" />
 
     <TextView
-        android:id="@+id/loading_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="@dimen/dp_4"
-        android:text="@string/list_footer_end"
-        android:textColor="@color/color_00"
-        android:textSize="@dimen/sp_14" />
+        android:layout_marginTop="10dp"
+        android:text="什么都没有"
+        android:textColor="@android:color/darker_gray" />
+
 </LinearLayout>
