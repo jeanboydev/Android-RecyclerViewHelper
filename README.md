@@ -114,4 +114,4 @@ RecyclerView的工具类，更方便的实现Adapter，item点击事件，更快
     See the License for the specific language governing permissions and
     limitations under the License.
 
-  [1]: https://github.com/freekite/Android-RecyclerViewHelper/blob/master/resource/ScreenShot1.jpg
+  [1]: https://github.com/freekite/Android-RecyclerViewHelper/blob/master/resource/ScreenRecord.gif
