@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(800);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                         if (loadCount % 2 != 0) {
                             //分页数据加载失败
                             recyclerViewHelper.loadMoreError();
-                        } else if (loadCount < 10) {
+                        } else if (loadCount < 7) {
                             for (int i = 0; i < 10; i++) {
                                 dataList.add(String.valueOf(i));
                             }
@@ -111,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(2000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

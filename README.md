@@ -4,7 +4,7 @@
 
 ##介绍
 
-RecyclerView的工具类，更快的实现分页加载，更方便的实现Adapter。
+RecyclerView的工具类，更方便的实现Adapter，更快的实现加载提示，分页加载，。
 
 ##使用
 
@@ -13,8 +13,8 @@ RecyclerView的工具类，更快的实现分页加载，更方便的实现Adapt
 ```java
 	public class ListAdapter extends CommonAdapter<String> {
 
-	    public ListAdapter(Context context, List<String> dataList, int layoutId) {
-	        super(context, dataList, layoutId);
+	    public ListAdapter(List<String> dataList) {
+	        super(dataList, R.layout.item_list);//设置item layout
 	    }
 	
 	    @Override
@@ -23,6 +23,11 @@ RecyclerView的工具类，更快的实现分页加载，更方便的实现Adapt
 	
 	        holder.setText(R.id.tv_title,"设置标题");
 	        holder.setImageResource(R.id.iv_thumb,R.drawable.bg);
+
+			or
+
+			holder.setText(R.id.tv_title,"设置标题")
+				  .setImageResource(R.id.iv_thumb,R.drawable.bg);
 	        //...
 	    }
 	}
@@ -30,78 +35,51 @@ RecyclerView的工具类，更快的实现分页加载，更方便的实现Adapt
 
 * 具体实现
 ```java
-    public class MainActivity extends AppCompatActivity {
+    
+		//使用helper实现分页加载和加载的Tips
+        recyclerViewHelper = new RecyclerViewHelper(recyclerView, listAdapter);
 
+        //设置没有数据的Tips
+        recyclerViewHelper.setTipsEmptyView(R.layout.view_data_empty);
+        //设置加载中的Tips
+        recyclerViewHelper.setTipsLoadingView(R.layout.view_data_loading);
+        //设置加载失败的Tips
+        recyclerViewHelper.setTipsErrorView(R.layout.view_data_error);
 
-    private RecyclerView list_container;
-
-    private List<String> dataList;
-
-    private ListAdapter listAdapter;
-
-
-    private RecyclerViewHelper loadMoreHelper;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-
-        list_container = (RecyclerView) findViewById(R.id.list_container);
-        dataList = new ArrayList<>();
-        listAdapter = new ListAdapter(this, dataList, R.layout.item_list);
-
-        //设置RecyclerView的layoutManager
-//        LinearLayoutManager layoutManager = new LinearLayoutManager(this);
-//        loadMoreHelper = RecyclerViewHelper.build(this, list_container, layoutManager, listAdapter);
-
-        //不传layoutManager默认为LinearLayoutManager
-        loadMoreHelper = RecyclerViewHelper.build(this, list_container, listAdapter);
-
-        loadMoreHelper.addLoadMoreListener(new RecyclerViewHelper.LoadMoreCallback() {
+        //加载失败，没有数据时Tips的接口
+        recyclerViewHelper.setTipsListener(new TipsListener() {
             @Override
-            public void loadMore() {
-                loadNext();
+            public void retry() {
+                //重新加载操作
             }
         });
 
-        initData();
-    }
+        //设置header
+		recyclerViewHelper.setHeaderView(R.layout.view_header);
 
-    private void loadNext() {
-        new Thread(new Runnable() {
+        //加载更多的接口
+        recyclerViewHelper.setLoadMoreListener(new LoadMoreListener() {
             @Override
-            public void run() {
-                try {
-                    Thread.sleep(1500);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < 10; i++) {
-                            dataList.add(String.valueOf(i));
-                        }
-                        loadMoreHelper.loadComplete();//通知helper加载完成
-                        loadMoreHelper.notifyDataSetChanged();//刷新数据
-                        loadMoreHelper.hasNext(true);//是否还有下一页
-                    }
-                });
+            public void loadMore() {
+                //加载下一页操作
             }
-        }).start();
+        });
 
-    }
 
-    private void initData() {
-        for (int i = 0; i < 20; i++) {
-            dataList.add(String.valueOf(i));
-        }
-        listAdapter.notifyDataSetChanged();
-	    }
-	}
+
+		//首次加载数据成功
+        recyclerViewHelper.loadTipsComplete();
+        //首次数据记载失败
+        recyclerViewHelper.loadTipsError();
+
+
+		//分页数据加载失败
+        recyclerViewHelper.loadMoreError();
+		//分页数据加载成功，还有下一页
+        recyclerViewHelper.loadMoreFinish(true);
+        //分页数据加载成功，没有更多。即全部加载完成
+        recyclerViewHelper.loadMoreFinish(false);
+
 ```
 
 
