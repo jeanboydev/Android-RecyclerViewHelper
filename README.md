@@ -1,12 +1,12 @@
-##RecyclerViewHelper
+## RecyclerViewHelper
 
 ------
 
-##介绍
+## 介绍
 
 RecyclerView的工具类，更方便的实现Adapter，item点击事件，更快的实现加载提示，分页加载。
 
-##使用
+## 使用
 
 * 导入lib-RecyclerViewHelper
 * Adapter继承CommonAdapter<T>
