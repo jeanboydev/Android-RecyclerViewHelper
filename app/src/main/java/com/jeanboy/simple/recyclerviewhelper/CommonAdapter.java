@@ -1,4 +1,4 @@
-package com.jeanboy.recyclerviewhelper.adapter;
+package com.jeanboy.simple.recyclerviewhelper;
 
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import java.util.List;
 
 /**
- * Created by Next on 2016/8/10.
+ * Created by jeanboy on 2016/8/10.
  */
 public abstract class CommonAdapter<T> extends RecyclerView.Adapter<BaseViewHolder> {
 

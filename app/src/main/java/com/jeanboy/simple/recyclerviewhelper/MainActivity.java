@@ -3,9 +3,14 @@ package com.jeanboy.simple.recyclerviewhelper;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 
 import com.jeanboy.recyclerviewhelper.RecyclerViewHelper;
+import com.jeanboy.recyclerviewhelper.adapter.ViewType;
+import com.jeanboy.recyclerviewhelper.footer.FooterState;
 import com.jeanboy.recyclerviewhelper.listener.LoadMoreListener;
+import com.jeanboy.recyclerviewhelper.listener.OnFooterChangeListener;
+import com.jeanboy.recyclerviewhelper.listener.OnViewBindListener;
 import com.jeanboy.recyclerviewhelper.listener.TipsListener;
 
 import java.util.ArrayList;
@@ -45,6 +50,11 @@ public class MainActivity extends AppCompatActivity {
         recyclerViewHelper.setTipsLoadingView(R.layout.view_data_loading);
         //设置加载失败的Tips
         recyclerViewHelper.setTipsErrorView(R.layout.view_data_error);
+        //设置header
+        recyclerViewHelper.setHeaderView(R.layout.view_header);
+
+        //默认加载更多 footer 也可自定义
+        recyclerViewHelper.useDefaultFooter();
 
         //加载失败，没有数据时Tips的接口
         recyclerViewHelper.setTipsListener(new TipsListener() {
@@ -54,14 +64,39 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //设置header
-//        recyclerViewHelper.setHeaderView(R.layout.view_header);
 
         //加载更多的接口
         recyclerViewHelper.setLoadMoreListener(new LoadMoreListener() {
             @Override
             public void loadMore() {
                 loadNext();
+            }
+        });
+
+
+        recyclerViewHelper.setOnViewBindListener(new OnViewBindListener() {
+            @Override
+            public void onBind(RecyclerView.ViewHolder holder, int viewType) {
+                Log.d(MainActivity.class.getName(), "==============onBind============");
+                if (ViewType.TYPE_HEADER == viewType) {
+                    // TODO: 2017/7/13 header view bind
+                } else if (ViewType.TYPE_FOOTER == viewType) {
+                    // TODO: 2017/7/13 footer view bind
+                }
+            }
+        });
+
+        recyclerViewHelper.setFooterChangeListener(new OnFooterChangeListener() {
+            @Override
+            public void onChange(RecyclerView.ViewHolder holder, int state) {
+                Log.d(MainActivity.class.getName(), "==============onChange============");
+                if (FooterState.LOADING == state) {
+                    // TODO: 2017/7/13 加载中
+                } else if (FooterState.ERROR == state) {
+                    // TODO: 2017/7/13 加载失败
+                } else if (FooterState.NO_MORE == state) {
+                    // TODO: 2017/7/13 加载完成
+                }
             }
         });
 
@@ -75,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(800);
+                    Thread.sleep(3000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -85,16 +120,16 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         if (loadCount % 2 != 0) {
                             //分页数据加载失败
-                            recyclerViewHelper.loadMoreError();
+                            recyclerViewHelper.loadError();
                         } else if (loadCount < 7) {
                             for (int i = 0; i < 10; i++) {
                                 dataList.add(String.valueOf(i));
                             }
                             //分页数据加载成功，还有下一页
-                            recyclerViewHelper.loadMoreFinish(true);
+                            recyclerViewHelper.loadComplete(true);
                         } else {
                             //分页数据加载成功，没有更多。即全部加载完成
-                            recyclerViewHelper.loadMoreFinish(false);
+                            recyclerViewHelper.loadComplete(false);
                         }
 
                         loadCount++;
@@ -121,15 +156,15 @@ public class MainActivity extends AppCompatActivity {
                     public void run() {
                         if (loadCount == 0) {
                             //首次加载数据成功
-                            recyclerViewHelper.loadTipsComplete();
+                            recyclerViewHelper.loadComplete(true);
                         } else if (loadCount == 1) {
                             //首次数据记载失败
-                            recyclerViewHelper.loadTipsError();
+                            recyclerViewHelper.loadError();
                         } else {
                             for (int i = 0; i < 10; i++) {
                                 dataList.add(String.valueOf(i));
                             }
-                            recyclerViewHelper.loadTipsComplete();
+                            recyclerViewHelper.loadComplete(true);
                         }
                         loadCount++;
                     }

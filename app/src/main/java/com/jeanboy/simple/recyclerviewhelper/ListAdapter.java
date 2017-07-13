@@ -3,9 +3,6 @@ package com.jeanboy.simple.recyclerviewhelper;
 
 import android.support.annotation.NonNull;
 
-import com.jeanboy.recyclerviewhelper.adapter.BaseViewHolder;
-import com.jeanboy.recyclerviewhelper.adapter.CommonAdapter;
-
 import java.util.List;
 
 /**

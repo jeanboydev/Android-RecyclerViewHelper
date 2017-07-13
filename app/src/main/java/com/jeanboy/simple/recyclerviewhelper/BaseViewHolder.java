@@ -1,4 +1,4 @@
-package com.jeanboy.recyclerviewhelper.adapter;
+package com.jeanboy.simple.recyclerviewhelper;
 
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
@@ -12,7 +12,7 @@ import android.widget.RatingBar;
 import android.widget.TextView;
 
 /**
- * Created by Next on 2016/8/10.
+ * Created by jeanboy on 2016/8/10.
  */
 public class BaseViewHolder extends RecyclerView.ViewHolder {
 
