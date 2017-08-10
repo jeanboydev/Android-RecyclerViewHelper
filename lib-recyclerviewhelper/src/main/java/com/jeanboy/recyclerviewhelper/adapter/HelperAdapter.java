@@ -145,15 +145,15 @@ public class HelperAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (ViewType.TYPE_HEADER == viewType) {
-            return  new HelperViewHolder(getLayoutView(parent, headerLayout));
+            return new HelperViewHolder(getLayoutView(parent, headerLayout));
         } else if (ViewType.TYPE_FOOTER == viewType) {
-            return  new HelperViewHolder(getLayoutView(parent, footerLayout));
+            return new HelperViewHolder(getLayoutView(parent, footerLayout));
         } else if (ViewType.TYPE_LOADING == viewType) {
-            return  new HelperViewHolder(getLayoutView(parent, loadingLayout));
+            return new HelperViewHolder(getLayoutView(parent, loadingLayout));
         } else if (ViewType.TYPE_ERROR == viewType) {
-            return  new HelperViewHolder(getLayoutView(parent, errorLayout));
+            return new HelperViewHolder(getLayoutView(parent, errorLayout));
         } else if (ViewType.TYPE_EMPTY == viewType) {
-            return  new HelperViewHolder(getLayoutView(parent, emptyLayout));
+            return new HelperViewHolder(getLayoutView(parent, emptyLayout));
         } else {
             return itemAdapter.createViewHolder(parent, viewType);
         }
@@ -173,6 +173,10 @@ public class HelperAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 onViewBindListener.onBind(holder, itemViewType);
             }
         }
+    }
+
+    public int getHeaderCount() {
+        return getHeaderViewCount();
     }
 
     private OnViewBindListener onViewBindListener;

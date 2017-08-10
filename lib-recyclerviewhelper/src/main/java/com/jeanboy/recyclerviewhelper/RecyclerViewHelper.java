@@ -222,6 +222,57 @@ public class RecyclerViewHelper {
         }
     }
 
+    public void notifyItemRemoved(int position) {
+        if (helperAdapter != null) {
+            helperAdapter.notifyItemRemoved(helperAdapter.getHeaderCount() + position);
+        }
+    }
+
+    public void notifyItemChanged(int position) {
+        if (helperAdapter != null) {
+            helperAdapter.notifyItemChanged(helperAdapter.getHeaderCount() + position);
+        }
+    }
+
+    public void notifyItemInserted(int position) {
+        if (helperAdapter != null) {
+            helperAdapter.notifyItemChanged(helperAdapter.getHeaderCount() + position);
+        }
+    }
+
+    public void notifyItemMoved(int fromPosition, int toPosition) {
+        if (helperAdapter != null) {
+            helperAdapter.notifyItemMoved(helperAdapter.getHeaderCount() + fromPosition, helperAdapter.getHeaderCount() + toPosition);
+        }
+    }
+
+    public void notifyItemRangeChanged(int positionStart, int itemCount) {
+        if (helperAdapter != null) {
+            helperAdapter.notifyItemRangeChanged(helperAdapter.getHeaderCount() + positionStart, helperAdapter.getHeaderCount() +
+                    itemCount);
+        }
+    }
+
+    public void notifyItemRangeInserted(int positionStart, int itemCount) {
+        if (helperAdapter != null) {
+            helperAdapter.notifyItemRangeInserted(helperAdapter.getHeaderCount() + positionStart, helperAdapter.getHeaderCount() +
+                    itemCount);
+        }
+    }
+
+    public void notifyItemRangeRemoved(int positionStart, int itemCount) {
+        if (helperAdapter != null) {
+            helperAdapter.notifyItemRangeRemoved(helperAdapter.getHeaderCount() + positionStart, helperAdapter.getHeaderCount() +
+                    itemCount);
+        }
+    }
+
+    public void notifyDataSetChanged() {
+        if (helperAdapter != null) {
+            helperAdapter.notifyDataSetChanged();
+        }
+    }
+
     private TipsListener tipsListener;
 
     public void setTipsListener(TipsListener tipsListener) {
