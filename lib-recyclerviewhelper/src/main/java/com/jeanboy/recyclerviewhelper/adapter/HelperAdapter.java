@@ -1,5 +1,6 @@
 package com.jeanboy.recyclerviewhelper.adapter;
 
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.view.LayoutInflater;
@@ -164,13 +165,68 @@ public class HelperAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         if (position >= getHeaderViewCount() && position < (getHeaderViewCount() + itemAdapter.getItemCount())) {
             itemAdapter.onBindViewHolder(holder, position - getHeaderViewCount());
         } else {
-            ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
-            if (layoutParams instanceof StaggeredGridLayoutManager.LayoutParams) {
-                ((StaggeredGridLayoutManager.LayoutParams) layoutParams).setFullSpan(true);
-            }
             int itemViewType = getItemViewType(position);
             if (onViewBindListener != null) {
                 onViewBindListener.onBind(holder, itemViewType);
+            }
+        }
+    }
+
+    @Override
+    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
+        super.onAttachedToRecyclerView(recyclerView);
+
+        itemAdapter.onAttachedToRecyclerView(recyclerView);
+
+        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+        if (layoutManager instanceof GridLayoutManager) {
+            final GridLayoutManager gridLayoutManager = (GridLayoutManager) layoutManager;
+            final GridLayoutManager.SpanSizeLookup spanSizeLookup = gridLayoutManager.getSpanSizeLookup();
+
+            gridLayoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+                @Override
+                public int getSpanSize(int position) {
+                    int viewType = getItemViewType(position);
+
+                    if (ViewType.TYPE_HEADER == viewType) {
+                        return gridLayoutManager.getSpanCount();
+                    } else if (ViewType.TYPE_FOOTER == viewType) {
+                        return gridLayoutManager.getSpanCount();
+                    } else if (ViewType.TYPE_LOADING == viewType) {
+                        return gridLayoutManager.getSpanCount();
+                    } else if (ViewType.TYPE_ERROR == viewType) {
+                        return gridLayoutManager.getSpanCount();
+                    } else if (ViewType.TYPE_EMPTY == viewType) {
+                        return gridLayoutManager.getSpanCount();
+                    }
+                    if (spanSizeLookup != null) {
+                        return spanSizeLookup.getSpanSize(position);
+                    }
+                    return 1;
+                }
+            });
+            gridLayoutManager.setSpanCount(gridLayoutManager.getSpanCount());
+        }
+    }
+
+    @Override
+    public void onViewAttachedToWindow(RecyclerView.ViewHolder holder) {
+        super.onViewAttachedToWindow(holder);
+
+        itemAdapter.onViewAttachedToWindow(holder);
+
+        int position = holder.getLayoutPosition();
+        int viewType = getItemViewType(position);
+
+        if (ViewType.TYPE_HEADER == viewType ||
+                ViewType.TYPE_FOOTER == viewType ||
+                ViewType.TYPE_LOADING == viewType ||
+                ViewType.TYPE_ERROR == viewType ||
+                ViewType.TYPE_EMPTY == viewType) {
+
+            ViewGroup.LayoutParams layoutParams = holder.itemView.getLayoutParams();
+            if (layoutParams instanceof StaggeredGridLayoutManager.LayoutParams) {
+                ((StaggeredGridLayoutManager.LayoutParams) layoutParams).setFullSpan(true);
             }
         }
     }
