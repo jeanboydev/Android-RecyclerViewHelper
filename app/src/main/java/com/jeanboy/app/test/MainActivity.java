@@ -5,9 +5,11 @@ import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.jeanboy.app.test.layout.FooterLayout;
+import com.jeanboy.app.test.layout.HeaderLayout;
 import com.jeanboy.app.test.layout.MaskLayout;
 import com.jeanboy.component.pagination.PaginationHelper;
-import com.jeanboy.component.pagination.layout.FooterLayout;
+import com.jeanboy.component.pagination.layout.LoadMoreLayout;
 import com.jeanboy.component.pagination.listener.LoadListener;
 
 import java.util.ArrayList;
@@ -34,7 +36,11 @@ public class MainActivity extends AppCompatActivity {
         // 设置加载中 View
         paginationHelper.setMaskLayout(new MaskLayout());
         // 设置加载更多 View
-        paginationHelper.setLoadMoreLayout(new FooterLayout());
+        paginationHelper.setLoadMoreLayout(new LoadMoreLayout());
+        paginationHelper.addHeader(new HeaderLayout());
+        paginationHelper.addHeader(new HeaderLayout());
+        paginationHelper.addFooter(new FooterLayout());
+        paginationHelper.addFooter(new FooterLayout());
 
         // 设置刷新的接口
         paginationHelper.setRefreshListener(new LoadListener() {

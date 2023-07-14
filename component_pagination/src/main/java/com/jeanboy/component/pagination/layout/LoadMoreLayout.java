@@ -14,11 +14,11 @@ import com.jeanboy.component.pagination.listener.LoadListener;
 /**
  * Created by jeanboy on 2020/04/01 16:50.
  */
-public class FooterLayout extends HolderLayout {
+public class LoadMoreLayout extends HolderLayout {
 
     @Override
     public int getLayoutId() {
-        return R.layout.item_footer;
+        return R.layout.pagination_default_item_load_more;
     }
 
     @Override
@@ -40,6 +40,7 @@ public class FooterLayout extends HolderLayout {
                 convertListener(holder.itemView, true, listener);
                 break;
             case ViewState.EMPTY:
+                holder.itemView.setVisibility(View.VISIBLE);
                 pb_progress.setVisibility(View.GONE);
                 tv_text.setText(R.string.data_no_more);
                 break;

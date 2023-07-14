@@ -178,7 +178,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             currentState = ViewState.EMPTY;
             notifyItemChanged(0);
         } else {
-            currentState = hasMore ? ViewState.DATA : ViewState.COMPLETED;
+            currentState = hasMore ? ViewState.DATA : ViewState.EMPTY;
             notifyItemChanged(getItemCount() - 1);
             if (changeSize > 0) {
                 notifyItemRangeInserted(getItemCount() - 1, changeSize);

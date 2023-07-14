@@ -17,7 +17,7 @@ public class MaskLayout extends HolderLayout {
 
     @Override
     public int getLayoutId() {
-        return R.layout.item_mask;
+        return R.layout.pagination_default_item_mask;
     }
 
     @Override

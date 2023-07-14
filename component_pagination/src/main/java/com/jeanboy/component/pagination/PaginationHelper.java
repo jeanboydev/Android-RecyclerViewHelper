@@ -50,8 +50,10 @@ public class PaginationHelper {
             public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
 
-                if (ViewState.COMPLETED == paginationAdapter.getCurrentState()) return;
                 if (ViewState.LOADING == paginationAdapter.getCurrentState()) return;
+                if (paginationAdapter.getDataSize() > 0 && ViewState.EMPTY == paginationAdapter.getCurrentState()) {
+                    return;
+                }
 
                 if (offsetY >= 0) { // 向上滑动，向后加载
                     RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
