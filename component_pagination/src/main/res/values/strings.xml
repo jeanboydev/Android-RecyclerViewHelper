@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="data_loading">Loading&#8230;</string>
+    <string name="data_error">Load Failed</string>
+    <string name="data_empty">No data</string>
+    <string name="data_no_more">No more</string>
+    <string name="data_reload">Reload</string>
+    <string name="data_error_retry">Load Failed, Click Retry</string>
+</resources>

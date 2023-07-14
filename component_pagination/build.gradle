@@ -1,0 +1,21 @@
+plugins {
+    id 'com.android.library'
+}
+
+android {
+    namespace 'com.jeanboy.component.pagination'
+
+    compileSdk 33
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 33
+
+        versionCode 1
+        versionName "1.0.1"
+    }
+}
+
+dependencies {
+    api "androidx.recyclerview:recyclerview:1.2.1"
+}
