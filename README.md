@@ -6,8 +6,9 @@
 
 ## 使用
 
-* 导入lib-RecyclerViewHelper
-* 具体实现
+-  导入 component_pagination
+- 具体使用
+
 ```java
     
 // 使用 helper 实现分页加载和加载中的提示
