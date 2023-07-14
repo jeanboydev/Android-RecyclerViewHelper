@@ -30,6 +30,14 @@ paginationHelper.setRefreshListener(new LoadListener() {
     }
 });
 
+// 设置加载更多的接口
+paginationHelper.setLoadMoreListener(new LoadListener() {
+    @Override
+    public void onLoad(boolean isError) {
+        toLoadMore();
+    }
+});
+
 // 加载中
 paginationHelper.setLoading();
 // 加载失败
