@@ -9,14 +9,13 @@
         android:id="@+id/pb_progress"
         android:layout_width="30dp"
         android:layout_height="30dp"
-        android:layout_gravity="center" />
+        android:layout_gravity="center"
+        android:layout_marginEnd="20dp" />
 
     <TextView
         android:id="@+id/tv_text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:layout_marginStart="20dp"
-        android:gravity="center"
-        android:textColor="@android:color/white" />
+        android:gravity="center" />
 </LinearLayout>
