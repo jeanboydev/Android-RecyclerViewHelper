@@ -18,9 +18,9 @@ import java.lang.annotation.RetentionPolicy;
  * Created by jeanboy on 2020/04/27 14:50.
  */
 public class SpaceItemDecoration extends RecyclerView.ItemDecoration {
-    private int edgeSpace; // 两边间距
-    private int itemSpace; // 中间间距
-    private int mode;
+    private final int edgeSpace; // 两边间距
+    private final int itemSpace; // 中间间距
+    private final int mode;
 
     public static final int HIDE_NONE = 0;
     public static final int HIDE_MIDDLE = 1;
