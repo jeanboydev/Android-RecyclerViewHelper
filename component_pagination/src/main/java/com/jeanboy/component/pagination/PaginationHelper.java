@@ -18,14 +18,6 @@ public class PaginationHelper {
     private final RecyclerView.Adapter itemAdapter;
     private final PaginationAdapter paginationAdapter;
 
-    /**
-     * 是否加载过数据
-     */
-    private boolean isDataLoaded = false;
-    private boolean isDataLoading = false;
-    private boolean isHasMoreData = false;
-    private boolean isUseDefaultFooter = false;
-
     public PaginationHelper(@NonNull RecyclerView recyclerView, RecyclerView.Adapter itemAdapter) {
         this.recyclerView = recyclerView;
         this.itemAdapter = itemAdapter;

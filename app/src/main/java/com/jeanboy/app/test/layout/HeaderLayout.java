@@ -1,5 +1,7 @@
 package com.jeanboy.app.test.layout;
 
+import android.util.Log;
+
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.jeanboy.app.test.R;
@@ -17,6 +19,6 @@ public class HeaderLayout extends HolderLayout {
 
     @Override
     public void convert(RecyclerView.ViewHolder holder, int state, LoadListener listener) {
-
+        Log.e("jianbo","HeaderLayout");
     }
 }

@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
-    private int currentState = ViewState.EMPTY;
+    private volatile int currentState = ViewState.EMPTY;
     private final List<HolderLayout> headerList = new ArrayList<>();
     private final List<HolderLayout> footerList = new ArrayList<>();
     private HolderLayout loadMoreLayout;
@@ -33,6 +33,8 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private LoadListener loadMoreListener;
 
     private final RecyclerView.Adapter itemAdapter;
+
+    private volatile int lastItemCount = 0;
 
     public PaginationAdapter(@NonNull RecyclerView.Adapter itemAdapter) {
         this.itemAdapter = itemAdapter;
@@ -45,14 +47,14 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        if (ViewType.MASK == (viewType & ViewType.MASK)) {
+        if (ViewType.MASK == viewType) {
             return new BaseViewHolder(getLayoutView(parent, maskLayout.getLayoutId()));
-        } else if (ViewType.LOAD_MORE == (viewType & ViewType.LOAD_MORE)) {
+        } else if (ViewType.LOAD_MORE == viewType) {
             return new BaseViewHolder(getLayoutView(parent, loadMoreLayout.getLayoutId()));
-        } else if (ViewType.HEADER == (viewType & ViewType.HEADER)) {
+        } else if (ViewType.HEADER == viewType) {
             HolderLayout holderLayout = headerList.get(viewType >> ViewType.OFFSET);
             return new BaseViewHolder(getLayoutView(parent, holderLayout.getLayoutId()));
-        } else if (ViewType.FOOTER == (viewType & ViewType.FOOTER)) {
+        } else if (ViewType.FOOTER == viewType) {
             HolderLayout holderLayout = footerList.get(viewType >> ViewType.OFFSET);
             return new BaseViewHolder(getLayoutView(parent, holderLayout.getLayoutId()));
         } else {
@@ -63,14 +65,14 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
         int viewType = getItemViewType(position);
-        if (ViewType.MASK == (viewType & ViewType.MASK)) {
+        if (ViewType.MASK == viewType) {
             maskLayout.convert(holder, currentState, refreshListener);
-        } else if (ViewType.LOAD_MORE == (viewType & ViewType.LOAD_MORE)) {
+        } else if (ViewType.LOAD_MORE == viewType) {
             loadMoreLayout.convert(holder, currentState, loadMoreListener);
-        } else if (ViewType.HEADER == (viewType & ViewType.HEADER)) {
+        } else if (ViewType.HEADER == viewType) {
             HolderLayout holderLayout = headerList.get(viewType >> ViewType.OFFSET);
             holderLayout.convert(holder, currentState, null);
-        } else if (ViewType.FOOTER == (viewType & ViewType.FOOTER)) {
+        } else if (ViewType.FOOTER == viewType) {
             HolderLayout holderLayout = footerList.get(viewType >> ViewType.OFFSET);
             holderLayout.convert(holder, currentState, null);
         } else {
@@ -113,6 +115,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         int headerCount = getHeaderCount();
         int footerCount = getFooterCount();
         int loadMoreCount = getLoadMoreCount();
+
         return headerCount + itemAdapter.getItemCount() + footerCount + loadMoreCount;
     }
 
@@ -154,18 +157,20 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public void setLoading() {
         currentState = ViewState.LOADING;
         if (itemAdapter.getItemCount() == 0 && getMaskCount() == 1) {
-            notifyItemChanged(0);
+            notifyDataSetChanged();
         } else {
-            notifyItemRangeChanged(getItemCount() - 1, 1);
+            int positionStart = getPositionStart(1);
+            notifyItemRangeChanged(positionStart, 1);
         }
     }
 
     public void setLoadError() {
         currentState = ViewState.ERROR;
         if (itemAdapter.getItemCount() == 0 && getMaskCount() == 1) {
-            notifyItemChanged(0);
+            notifyDataSetChanged();
         } else {
-            notifyItemRangeChanged(getItemCount() - 1, 1);
+            int positionStart = getPositionStart(1);
+            notifyItemRangeChanged(positionStart, 1);
         }
     }
 
@@ -174,18 +179,39 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     }
 
     public void setLoadCompleted(int changeSize, boolean hasMore) {
-        if (itemAdapter.getItemCount() == 0 && getMaskCount() == 1) {
+        int itemCount = itemAdapter.getItemCount();
+        if (itemCount == 0 && getMaskCount() == 1) {
             currentState = ViewState.EMPTY;
-            notifyItemChanged(0);
+            notifyDataSetChanged();
         } else {
             currentState = hasMore ? ViewState.DATA : ViewState.EMPTY;
-            notifyItemChanged(getItemCount() - 1);
-            if (changeSize > 0) {
-                notifyItemRangeInserted(getItemCount() - 1, changeSize);
-            } else {
+            if (changeSize == -1) {
                 notifyDataSetChanged();
+            } else {
+                if (itemCount < lastItemCount) {
+                    notifyDataSetChanged();
+                } else {
+                    int positionStart = getPositionStart(changeSize);
+                    if (positionStart == 0) {
+                        notifyItemChanged(0);
+                    }
+                    if (changeSize > 0) {
+                        notifyItemRangeInserted(positionStart, changeSize);
+                    } else {
+                        notifyItemChanged(positionStart);
+                    }
+                }
             }
         }
+        lastItemCount = itemAdapter.getItemCount();
+    }
+
+    private int getPositionStart(int changeSize) {
+        int itemCount = getItemCount();
+        int positionStart = itemCount - changeSize;
+        positionStart = Math.max(positionStart, 0);
+        positionStart = Math.min(positionStart, itemCount - 1);
+        return positionStart;
     }
 
     public void setMaskLayout(HolderLayout maskLayout) {

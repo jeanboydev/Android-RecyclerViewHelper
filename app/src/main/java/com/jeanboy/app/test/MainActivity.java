@@ -37,10 +37,10 @@ public class MainActivity extends AppCompatActivity {
         paginationHelper.setMaskLayout(new MaskLayout());
         // 设置加载更多 View
         paginationHelper.setLoadMoreLayout(new LoadMoreLayout());
-        paginationHelper.addHeader(new HeaderLayout());
-        paginationHelper.addHeader(new HeaderLayout());
-        paginationHelper.addFooter(new FooterLayout());
-        paginationHelper.addFooter(new FooterLayout());
+//        paginationHelper.addHeader(new HeaderLayout());
+//        paginationHelper.addHeader(new HeaderLayout());
+//        paginationHelper.addFooter(new FooterLayout());
+//        paginationHelper.addFooter(new FooterLayout());
 
         // 设置刷新的接口
         paginationHelper.setRefreshListener(new LoadListener() {
@@ -62,7 +62,15 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        toLoadData();
+//        toLoadData();
+        paginationHelper.setLoading();
+        dataList.clear();
+        paginationHelper.setLoadCompleted(true);
+        for (int i = 0; i < 10; i++) {
+            dataList.add(String.valueOf(i));
+        }
+        // 分页数据加载成功，还有下一页
+        paginationHelper.setLoadCompleted(true);
     }
 
     private void toLoadMore() {

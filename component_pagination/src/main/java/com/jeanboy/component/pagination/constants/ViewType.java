@@ -5,10 +5,10 @@ package com.jeanboy.component.pagination.constants;
  */
 public interface ViewType {
     int ITEM = 0;
-    int MASK = 1;
-    int LOAD_MORE = 1 << 2;
-    int HEADER = 1 << 3;
-    int FOOTER = 1 << 4;
+    int MASK = 0x10808001;
+    int LOAD_MORE = 0x10808002;
+    int HEADER = 0x10808003;
+    int FOOTER = 0x10808004;
     // 偏移量
     int OFFSET = 5;
 }
