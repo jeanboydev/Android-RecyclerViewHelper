@@ -188,7 +188,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             if (changeSize == -1) {
                 notifyDataSetChanged();
             } else {
-                if (itemCount < lastItemCount) {
+                if (itemCount < lastItemCount) { // 数据减少了，刷新的情况
                     notifyDataSetChanged();
                 } else {
                     int positionStart = getPositionStart(changeSize);
@@ -208,7 +208,7 @@ public class PaginationAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
 
     private int getPositionStart(int changeSize) {
         int itemCount = getItemCount();
-        int positionStart = itemCount - changeSize;
+        int positionStart = itemCount - changeSize - getLoadMoreCount() - getFooterCount();
         positionStart = Math.max(positionStart, 0);
         positionStart = Math.min(positionStart, itemCount - 1);
         return positionStart;
