@@ -1,5 +1,7 @@
 package com.jeanboy.component.pagination;
 
+import android.os.Parcelable;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -112,7 +114,18 @@ public class PaginationHelper {
     }
 
     public void setLoadCompleted(int changeSize, boolean hasMore) {
+        Parcelable parcelable = null;
+        RecyclerView.LayoutManager layoutManager = null;
+        if (recyclerView != null) {
+            layoutManager = recyclerView.getLayoutManager();
+            if (layoutManager != null) {
+                parcelable = layoutManager.onSaveInstanceState();
+            }
+        }
         paginationAdapter.setLoadCompleted(changeSize, hasMore);
+        if (parcelable != null && layoutManager != null) {
+            layoutManager.onRestoreInstanceState(parcelable);
+        }
     }
 
     public void setMaskLayout(HolderLayout layout) {
